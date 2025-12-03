@@ -37,7 +37,26 @@ struct Day01: DailyChallenge {
     }
     
     func part2() -> String {
-        "Hello"
+        let input = input(from: "Day01-Input")
+        var dialValue = 50
+        var zeroClickedCount = Int()
+        
+        let instructionStrings = input.lines.map(String.init)
+        
+        var instructions: [Instruction] = []
+        for string in instructionStrings {
+            guard let instruction = Instruction.fromString(string) else {
+                print("Found invalid instruction string that will be skipped: \(string)")
+                continue
+            }
+            instructions.append(instruction)
+        }
+        
+        for instruction in instructions {
+            zeroClickedCount += dialValue.modify(using: instruction)
+        }
+        
+        return String(zeroClickedCount)
     }
     
     struct Instruction {
@@ -66,15 +85,30 @@ struct Day01: DailyChallenge {
 }
 
 extension Int {
-    mutating func modify(using instruction: Day01.Instruction) {
+    @discardableResult mutating func modify(using instruction: Day01.Instruction) -> Int {
         let dialNumberCount: Int = 100
+
+        var zeroClickCount = Int()
         
-        let movement = instruction.direction == .right
-            ? self + instruction.distance
-            : self - instruction.distance
+        if instruction.direction == .right {
+            let newValue = self + instruction.distance
+            zeroClickCount = newValue / dialNumberCount
+        }
         
-        // Remainders take the sign of the dividend. Since it can be negative, add the dial count and take the remainder again to ensure we always get the positive counterpart
-        self = (movement % dialNumberCount + dialNumberCount) % dialNumberCount
+        if instruction.direction == .left {
+            if self == 0 {
+                zeroClickCount = instruction.distance / dialNumberCount
+            } else if instruction.distance >= self {
+                zeroClickCount = (instruction.distance - self) / dialNumberCount + 1
+            } else {
+                zeroClickCount = 0
+            }
+        }
+
+        let movement = instruction.direction == .right ? instruction.distance : -instruction.distance
+        self = ((self + movement) % dialNumberCount + dialNumberCount) % dialNumberCount
+
+        return zeroClickCount
     }
 }
 
