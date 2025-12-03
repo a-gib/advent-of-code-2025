@@ -7,7 +7,10 @@ let package = Package(
     name: "advent-of-code-2025",
     targets: [
         .executableTarget(
-            name: "advent-of-code-2025"
+            name: "advent-of-code-2025",
+            resources: [
+                .process("Resources")
+            ]
         ),
     ]
 )

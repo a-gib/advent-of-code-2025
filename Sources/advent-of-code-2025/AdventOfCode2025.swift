@@ -5,6 +5,8 @@
 //  Created by a-gib on 2025-12-03.
 //
 
+import Foundation
+
 struct Days {
     /// Registry for all daily challenges to be executed. Comment out as needed.
     static let all: [DailyChallenge] = [
@@ -33,5 +35,20 @@ extension DailyChallenge {
             Part 2: \(part2())
             
             """)
+    }
+    
+    func input(from fileName: String) -> String {
+        guard let url = Bundle.module.url(forResource: fileName, withExtension: "txt") else {
+            print("Error: File '\(fileName).txt' not found in bundle.")
+            fatalError()
+        }
+        
+        do {
+            let content = try String.init(contentsOf: url, encoding: .utf8)
+            return content
+        } catch {
+            print("Error reading file contents: \(error)")
+            fatalError()
+        }
     }
 }
